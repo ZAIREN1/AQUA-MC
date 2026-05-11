@@ -3,279 +3,188 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>AQUAMC Store</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<title>AquaMC Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --aqua:#00C6D4;--aqua-dark:#0097A7;--aqua-light:#B2EBF2;--aqua-glow:rgba(0,198,212,0.15);
-  --bg:#0A0F1E;--bg2:#0F1629;--bg3:#141C35;--card:#121929;--border:rgba(0,198,212,0.18);
-  --text:#E8F4F8;--muted:#7A9BB5;--gold:#FFD700;--silver:#C0C0C0;
+  --aqua:#00C6D4;--aqua-dark:#0097A7;--aqua-glow:rgba(0,198,212,0.15);
+  --bg:#05080F;--bg2:#080D1A;--card:#0C1220;--border:rgba(0,198,212,0.15);
+  --text:#E8F4F8;--muted:#5A7A95;
 }
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* ANIMATED BG */
+#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+
+.grid-lines{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(0,198,212,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,198,212,0.04) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+
+/* content above bg */
+nav,section,.hero,.infobar,footer{position:relative;z-index:1;}
 
 /* NAV */
 nav{
   position:sticky;top:0;z-index:100;
-  background:rgba(10,15,30,0.95);backdrop-filter:blur(16px);
+  background:rgba(5,8,15,0.92);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
   padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;
 }
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
-.logo-icon{
-  width:36px;height:36px;border-radius:8px;
-  background:linear-gradient(135deg,var(--aqua),var(--aqua-dark));
-  display:flex;align-items:center;justify-content:center;
-  font-weight:800;font-size:14px;color:#0A0F1E;
-}
-.logo-text{font-size:1.2rem;font-weight:700;color:var(--text);}
+.logo-img{width:44px;height:44px;border-radius:10px;object-fit:cover;outline:2px solid rgba(0,198,212,0.5);outline-offset:2px;}
+.logo-fallback{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#00C6D4,#0097A7);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#05080F;outline:2px solid rgba(0,198,212,0.5);outline-offset:2px;}
+.logo-text{font-size:1.2rem;font-weight:800;color:var(--text);letter-spacing:-0.02em;}
 .logo-text span{color:var(--aqua);}
 nav ul{list-style:none;display:flex;gap:0.25rem;}
 nav ul li a{padding:6px 14px;border-radius:6px;text-decoration:none;font-size:0.88rem;font-weight:500;color:var(--muted);transition:all 0.2s;}
 nav ul li a:hover{color:var(--text);background:rgba(255,255,255,0.05);}
-.nav-btn{
-  padding:8px 18px;border-radius:8px;border:none;cursor:pointer;
-  background:var(--aqua);color:#0A0F1E;font-weight:600;font-size:0.85rem;font-family:'Outfit',sans-serif;
-  transition:all 0.2s;
-}
+.nav-btn{padding:8px 18px;border-radius:8px;border:none;cursor:pointer;background:var(--aqua);color:#05080F;font-weight:700;font-size:0.85rem;font-family:'Outfit',sans-serif;transition:all 0.2s;}
 .nav-btn:hover{background:#00E5FF;}
 
 /* HERO */
 .hero{
-  text-align:center;padding:5rem 2rem 4rem;
-  background:radial-gradient(ellipse at 50% 0%,rgba(0,198,212,0.08) 0%,transparent 70%);
-  border-bottom:1px solid var(--border);position:relative;overflow:hidden;
+  text-align:center;padding:6rem 2rem 5rem;
+  background:radial-gradient(ellipse at 50% 0%,rgba(0,198,212,0.07) 0%,transparent 65%);
+  border-bottom:1px solid var(--border);
 }
-.hero-badge{
-  display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;
-  background:rgba(0,198,212,0.1);border:1px solid rgba(0,198,212,0.25);
-  font-size:0.78rem;font-weight:600;color:var(--aqua);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:1.5rem;
-}
-.dot{width:6px;height:6px;border-radius:50%;background:#00C853;animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.6;transform:scale(0.8);}}
-.hero h1{
-  font-size:3.2rem;font-weight:800;line-height:1.1;margin-bottom:1rem;
-  background:linear-gradient(135deg,#fff 0%,var(--aqua) 60%,#80DEEA 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.hero p{font-size:1.1rem;color:var(--muted);max-width:480px;margin:0 auto 2rem;line-height:1.6;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;background:rgba(0,198,212,0.08);border:1px solid rgba(0,198,212,0.2);font-size:0.75rem;font-weight:700;color:var(--aqua);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:1.5rem;}
+.dot{width:6px;height:6px;border-radius:50%;background:#00C853;animation:pulse 2s infinite;display:inline-block;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.hero h1{font-size:3.8rem;font-weight:900;line-height:1.05;margin-bottom:1rem;letter-spacing:-0.03em;background:linear-gradient(135deg,#fff 0%,var(--aqua) 50%,#80DEEA 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{font-size:1.05rem;color:var(--muted);max-width:460px;margin:0 auto 2rem;line-height:1.7;}
 .hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-.btn-primary{
-  padding:12px 28px;border-radius:10px;border:none;cursor:pointer;
-  background:linear-gradient(135deg,var(--aqua),var(--aqua-dark));
-  color:#0A0F1E;font-weight:700;font-size:0.95rem;font-family:'Outfit',sans-serif;transition:all 0.2s;
-}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,198,212,0.3);}
-.btn-secondary{
-  padding:12px 28px;border-radius:10px;cursor:pointer;
-  background:transparent;border:1px solid var(--border);
-  color:var(--text);font-weight:600;font-size:0.95rem;font-family:'Outfit',sans-serif;transition:all 0.2s;
-}
+.btn-primary{padding:13px 30px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--aqua),var(--aqua-dark));color:#05080F;font-weight:800;font-size:0.95rem;font-family:'Outfit',sans-serif;transition:all 0.2s;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,198,212,0.25);}
+.btn-secondary{padding:13px 30px;border-radius:10px;cursor:pointer;background:transparent;border:1px solid var(--border);color:var(--text);font-weight:600;font-size:0.95rem;font-family:'Outfit',sans-serif;transition:all 0.2s;}
 .btn-secondary:hover{border-color:var(--aqua);color:var(--aqua);background:var(--aqua-glow);}
-.ip-chip{
-  display:inline-flex;align-items:center;gap:8px;
-  background:rgba(0,198,212,0.08);border:1px solid rgba(0,198,212,0.2);
-  border-radius:8px;padding:6px 14px;margin-top:1rem;
-  font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:var(--aqua);cursor:pointer;transition:all 0.2s;
-}
-.ip-chip:hover{background:rgba(0,198,212,0.14);}
+.ip-chip{display:inline-flex;align-items:center;gap:8px;background:rgba(0,198,212,0.06);border:1px solid rgba(0,198,212,0.18);border-radius:8px;padding:7px 16px;margin-top:1.25rem;font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:var(--aqua);cursor:pointer;transition:all 0.2s;}
+.ip-chip:hover{background:rgba(0,198,212,0.12);}
 
 /* INFOBAR */
-.infobar{
-  display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;
-  padding:1rem 2rem;background:var(--bg2);border-bottom:1px solid var(--border);
-}
-.infobar-item{display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--muted);}
+.infobar{display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap;padding:0.9rem 2rem;background:rgba(8,13,26,0.8);border-bottom:1px solid var(--border);}
+.infobar-item{display:flex;align-items:center;gap:8px;font-size:0.83rem;color:var(--muted);}
 .infobar-item strong{color:var(--text);font-weight:600;}
-.infobar-icon{width:8px;height:8px;border-radius:50%;}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#00C853;display:inline-block;animation:pulse 2s infinite;}
 .dc-link{color:var(--aqua);text-decoration:none;font-weight:600;}
 .dc-link:hover{text-decoration:underline;}
 
 /* SECTION */
-section{padding:4rem 2rem;}
+section{padding:4.5rem 2rem;}
 .section-header{text-align:center;margin-bottom:3rem;}
-.section-label{font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--aqua);margin-bottom:0.5rem;}
-.section-title{font-size:2rem;font-weight:700;margin-bottom:0.75rem;color:var(--text);}
-.section-sub{color:var(--muted);font-size:0.95rem;max-width:440px;margin:0 auto;}
+.section-label{font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--aqua);margin-bottom:0.5rem;}
+.section-title{font-size:2.1rem;font-weight:800;margin-bottom:0.75rem;color:var(--text);letter-spacing:-0.02em;}
+.section-sub{color:var(--muted);font-size:0.92rem;max-width:420px;margin:0 auto;}
 
 /* RANKS */
-.ranks-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem;max-width:1100px;margin:0 auto;}
-.rank-card{
-  background:var(--card);border-radius:16px;padding:1.75rem 1.5rem;
-  border:1px solid var(--border);position:relative;overflow:hidden;
-  transition:all 0.25s;cursor:pointer;
-}
+.ranks-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:1.25rem;max-width:1100px;margin:0 auto;}
+.rank-card{background:var(--card);border-radius:18px;padding:1.75rem 1.5rem;border:1px solid var(--border);position:relative;overflow:hidden;transition:all 0.3s;cursor:pointer;}
 .rank-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--rank-color);}
-.rank-card:hover{transform:translateY(-4px);border-color:var(--rank-color);box-shadow:0 16px 40px rgba(0,0,0,0.4);}
-.rank-card.featured{border-color:rgba(0,198,212,0.4);}
-.rank-badge-pop{
-  position:absolute;top:12px;right:12px;
-  background:var(--aqua);color:#0A0F1E;
-  font-size:0.65rem;font-weight:700;letter-spacing:0.06em;
-  padding:3px 8px;border-radius:20px;text-transform:uppercase;
-}
-.rank-icon{width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem;}
-.rank-name{font-size:1.1rem;font-weight:700;margin-bottom:0.2rem;color:var(--rank-color);}
-.rank-desc{font-size:0.8rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.5;}
-.rank-price{font-size:1.6rem;font-weight:800;color:var(--text);margin-bottom:0.25rem;}
-.rank-price span{font-size:0.9rem;font-weight:400;color:var(--muted);}
-.rank-perks{list-style:none;margin:1rem 0 1.5rem;display:flex;flex-direction:column;gap:6px;}
-.rank-perks li{font-size:0.82rem;color:var(--muted);display:flex;align-items:center;gap:8px;}
-.rank-perks li::before{content:'✓';color:var(--rank-color);font-weight:700;font-size:0.75rem;}
-.rank-buy-btn{
-  width:100%;padding:10px;border-radius:10px;border:none;cursor:pointer;
-  font-family:'Outfit',sans-serif;font-weight:600;font-size:0.88rem;
-  background:rgba(255,255,255,0.05);color:var(--text);border:1px solid rgba(255,255,255,0.1);transition:all 0.2s;
-}
-.rank-buy-btn:hover{background:var(--rank-color);color:#0A0F1E;border-color:transparent;}
-.rank-buy-btn.featured-btn{background:linear-gradient(135deg,var(--aqua),var(--aqua-dark));color:#0A0F1E;border:none;}
+.rank-card::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,var(--rank-glow) 0%,transparent 60%);opacity:0;transition:opacity 0.3s;pointer-events:none;}
+.rank-card:hover{transform:translateY(-6px);border-color:var(--rank-color);}
+.rank-card:hover::after{opacity:1;}
+.rank-badge-pop{position:absolute;top:14px;right:14px;background:var(--aqua);color:#05080F;font-size:0.62rem;font-weight:800;letter-spacing:0.08em;padding:3px 9px;border-radius:20px;text-transform:uppercase;}
+.rank-emoji{font-size:2.2rem;margin-bottom:0.9rem;display:block;}
+.rank-name{font-size:1.1rem;font-weight:800;margin-bottom:0.25rem;color:var(--rank-color);letter-spacing:0.02em;text-transform:uppercase;}
+.rank-desc{font-size:0.78rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.5;}
+.rank-price{font-size:1.7rem;font-weight:900;color:var(--text);margin-bottom:0.2rem;font-family:'JetBrains Mono',monospace;}
+.rank-price-unit{font-size:0.78rem;color:var(--muted);margin-bottom:1rem;}
+.rank-perks{list-style:none;margin:0 0 1.5rem;display:flex;flex-direction:column;gap:5px;}
+.rank-perks li{font-size:0.8rem;color:var(--muted);display:flex;align-items:center;gap:7px;}
+.rank-perks li::before{content:'✦';color:var(--rank-color);font-size:0.6rem;}
+.rank-buy-btn{width:100%;padding:10px;border-radius:10px;border:1px solid var(--rank-color);cursor:pointer;font-family:'Outfit',sans-serif;font-weight:700;font-size:0.85rem;background:rgba(255,255,255,0.03);color:var(--rank-color);transition:all 0.2s;}
+.rank-buy-btn:hover,.rank-buy-btn.featured-btn{background:var(--rank-color);color:#05080F;}
 
 /* CRATES */
-.crates-section{background:var(--bg2);}
+.crates-section{background:rgba(8,13,26,0.5);}
 .crates-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;max-width:1100px;margin:0 auto;}
-.crate-card{background:var(--card);border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:all 0.25s;cursor:pointer;}
-.crate-card:hover{transform:translateY(-4px);border-color:var(--crate-color);}
-.crate-header{padding:2rem 1.5rem 1.5rem;text-align:center;background:linear-gradient(180deg,var(--crate-bg) 0%,transparent 100%);}
-.crate-icon-wrap{
-  width:72px;height:72px;border-radius:18px;
-  background:rgba(255,255,255,0.06);border:2px solid var(--crate-color);
-  display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1rem;
-  box-shadow:0 0 20px var(--crate-glow);
-}
-.crate-name{font-size:1.15rem;font-weight:700;color:var(--crate-color);}
-.crate-subtitle{font-size:0.8rem;color:var(--muted);margin-top:4px;}
-.crate-body{padding:1.25rem 1.5rem 1.5rem;}
+.crate-card{background:var(--card);border-radius:18px;overflow:hidden;border:1px solid var(--border);transition:all 0.3s;cursor:pointer;position:relative;}
+.crate-card::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,var(--crate-glow) 0%,transparent 60%);opacity:0;transition:opacity 0.3s;pointer-events:none;}
+.crate-card:hover{transform:translateY(-6px);border-color:var(--crate-color);}
+.crate-card:hover::after{opacity:1;}
+.crate-header{padding:2rem 1.5rem 1.5rem;text-align:center;border-bottom:1px solid var(--border);}
+.crate-icon-wrap{width:72px;height:72px;border-radius:18px;background:rgba(255,255,255,0.04);border:2px solid var(--crate-color);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1rem;animation:crate-pulse 3s ease-in-out infinite;}
+@keyframes crate-pulse{0%,100%{box-shadow:0 0 16px var(--crate-glow);}50%{box-shadow:0 0 36px var(--crate-glow),0 0 8px var(--crate-glow);}}
+.crate-name{font-size:1.1rem;font-weight:800;color:var(--crate-color);text-transform:uppercase;letter-spacing:0.04em;}
+.crate-subtitle{font-size:0.78rem;color:var(--muted);margin-top:4px;}
+.crate-body{padding:1.25rem 1.5rem 1.5rem;position:relative;z-index:1;}
 .crate-items{display:flex;flex-direction:column;gap:6px;margin-bottom:1.25rem;}
-.crate-item{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,0.03);font-size:0.82rem;}
+.crate-item{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,0.03);font-size:0.8rem;}
 .crate-item-name{color:var(--text);}
-.crate-item-chance{font-size:0.72rem;font-weight:600;color:var(--crate-color);font-family:'JetBrains Mono',monospace;}
+.crate-item-chance{font-size:0.7rem;font-weight:700;color:var(--crate-color);font-family:'JetBrains Mono',monospace;}
 .crate-divider{height:1px;background:var(--border);margin:1rem 0;}
 .crate-key-price{display:flex;align-items:center;justify-content:space-between;}
-.key-info{font-size:0.82rem;color:var(--muted);}
-.key-price{font-size:1.3rem;font-weight:700;color:var(--text);}
-.crate-buy-btn{
-  width:100%;padding:10px;border-radius:10px;border:none;cursor:pointer;
-  font-family:'Outfit',sans-serif;font-weight:600;font-size:0.88rem;
-  background:var(--crate-color);color:#0A0F1E;transition:all 0.2s;margin-top:1rem;
-}
+.key-info{font-size:0.8rem;color:var(--muted);}
+.key-price{font-size:1.3rem;font-weight:900;color:var(--text);font-family:'JetBrains Mono',monospace;}
+.crate-buy-btn{width:100%;padding:10px;border-radius:10px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:700;font-size:0.88rem;background:var(--crate-color);color:#05080F;transition:all 0.2s;margin-top:1rem;}
 .crate-buy-btn:hover{opacity:0.85;transform:translateY(-1px);}
 
 /* FEATURES */
 .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;max-width:900px;margin:0 auto;}
-.feature-card{background:var(--card);border-radius:12px;padding:1.25rem;border:1px solid var(--border);display:flex;gap:12px;align-items:flex-start;}
-.feature-icon{width:36px;height:36px;border-radius:8px;flex-shrink:0;background:var(--aqua-glow);border:1px solid rgba(0,198,212,0.2);display:flex;align-items:center;justify-content:center;font-size:1rem;}
-.feature-title{font-size:0.9rem;font-weight:600;color:var(--text);margin-bottom:4px;}
+.feature-card{background:var(--card);border-radius:14px;padding:1.25rem;border:1px solid var(--border);display:flex;gap:12px;align-items:flex-start;}
+.feature-icon{width:38px;height:38px;border-radius:10px;flex-shrink:0;background:var(--aqua-glow);border:1px solid rgba(0,198,212,0.2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.feature-title{font-size:0.9rem;font-weight:700;color:var(--text);margin-bottom:4px;}
 .feature-desc{font-size:0.78rem;color:var(--muted);line-height:1.5;}
 
 /* FOOTER */
-footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem;text-align:center;}
-.footer-logo{font-size:1.3rem;font-weight:700;margin-bottom:0.5rem;}
+footer{background:rgba(5,8,15,0.95);border-top:1px solid var(--border);padding:2rem;text-align:center;}
+.footer-logo{font-size:1.3rem;font-weight:800;margin-bottom:0.5rem;letter-spacing:-0.02em;}
 .footer-logo span{color:var(--aqua);}
-footer p{font-size:0.82rem;color:var(--muted);}
+footer p{font-size:0.8rem;color:var(--muted);}
 .footer-links{display:flex;justify-content:center;gap:1.5rem;margin:1rem 0;flex-wrap:wrap;}
-.footer-links a{font-size:0.82rem;color:var(--muted);text-decoration:none;transition:color 0.2s;}
+.footer-links a{font-size:0.8rem;color:var(--muted);text-decoration:none;transition:color 0.2s;}
 .footer-links a:hover{color:var(--aqua);}
 
-/* ===== OVERLAY MODALS ===== */
-.overlay{
-  display:none;position:fixed;inset:0;z-index:1000;
-  background:rgba(5,8,20,0.85);backdrop-filter:blur(6px);
-  align-items:center;justify-content:center;padding:1rem;
-}
+/* MODALS */
+.overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.88);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:1rem;}
 .overlay.active{display:flex;}
-.modal{
-  background:var(--bg2);border:1px solid var(--border);border-radius:20px;
-  padding:2.5rem;max-width:440px;width:100%;position:relative;
-  animation:modalIn 0.25s ease;
-}
-@keyframes modalIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-.modal-close{
-  position:absolute;top:16px;right:16px;
-  width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;
-  background:rgba(255,255,255,0.07);color:var(--muted);font-size:1rem;
-  display:flex;align-items:center;justify-content:center;transition:all 0.2s;
-}
+.modal{background:#0C1220;border:1px solid var(--border);border-radius:22px;padding:2.5rem;max-width:440px;width:100%;position:relative;animation:modalIn 0.25s ease;}
+@keyframes modalIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.modal-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;background:rgba(255,255,255,0.07);color:var(--muted);font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
 .modal-close:hover{background:rgba(255,255,255,0.12);color:var(--text);}
-.modal-icon{font-size:2.5rem;margin-bottom:1rem;text-align:center;}
-.modal-title{font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:0.4rem;text-align:center;}
-.modal-sub{font-size:0.88rem;color:var(--muted);text-align:center;margin-bottom:1.5rem;line-height:1.5;}
-.modal-item-name{
-  text-align:center;padding:10px 16px;border-radius:10px;
-  background:rgba(0,198,212,0.08);border:1px solid rgba(0,198,212,0.2);
-  font-weight:600;color:var(--aqua);font-size:1rem;margin-bottom:1.5rem;
-}
-.dc-modal-btn{
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;
-  background:linear-gradient(135deg,#5865F2,#4752C4);
-  color:#fff;font-family:'Outfit',sans-serif;font-weight:700;font-size:1rem;
-  text-decoration:none;transition:all 0.2s;
-}
+.modal-icon{font-size:3rem;margin-bottom:1rem;text-align:center;}
+.modal-title{font-size:1.4rem;font-weight:800;color:var(--text);margin-bottom:0.4rem;text-align:center;}
+.modal-sub{font-size:0.88rem;color:var(--muted);text-align:center;margin-bottom:1.5rem;line-height:1.6;}
+.modal-item-name{text-align:center;padding:10px 16px;border-radius:10px;background:rgba(0,198,212,0.08);border:1px solid rgba(0,198,212,0.2);font-weight:700;color:var(--aqua);font-size:1rem;margin-bottom:1.5rem;font-family:'JetBrains Mono',monospace;}
+.dc-modal-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,#5865F2,#4752C4);color:#fff;font-family:'Outfit',sans-serif;font-weight:700;font-size:1rem;text-decoration:none;transition:all 0.2s;}
 .dc-modal-btn:hover{opacity:0.9;transform:translateY(-1px);}
-.dc-icon{
-  width:24px;height:24px;
-  background:#fff;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:0.7rem;color:#5865F2;font-weight:900;
-}
-.modal-note{font-size:0.78rem;color:var(--muted);text-align:center;margin-top:1rem;line-height:1.5;}
+.modal-note{font-size:0.78rem;color:var(--muted);text-align:center;margin-top:1rem;line-height:1.6;}
 
-/* AUTH MODAL */
+/* AUTH */
 .auth-tabs{display:flex;border-radius:10px;background:rgba(255,255,255,0.04);padding:4px;gap:4px;margin-bottom:1.5rem;}
-.auth-tab{
-  flex:1;padding:8px;border-radius:8px;border:none;cursor:pointer;
-  font-family:'Outfit',sans-serif;font-weight:600;font-size:0.88rem;
-  background:transparent;color:var(--muted);transition:all 0.2s;
-}
-.auth-tab.active{background:var(--aqua);color:#0A0F1E;}
+.auth-tab{flex:1;padding:8px;border-radius:8px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;font-size:0.88rem;background:transparent;color:var(--muted);transition:all 0.2s;}
+.auth-tab.active{background:var(--aqua);color:#05080F;}
 .auth-form{display:flex;flex-direction:column;gap:12px;}
-.auth-form label{font-size:0.8rem;color:var(--muted);margin-bottom:2px;display:block;}
-.auth-form input{
-  width:100%;padding:11px 14px;border-radius:10px;
-  background:rgba(255,255,255,0.05);border:1px solid var(--border);
-  color:var(--text);font-family:'Outfit',sans-serif;font-size:0.92rem;outline:none;
-  transition:border-color 0.2s;
-}
+.auth-form label{font-size:0.78rem;color:var(--muted);margin-bottom:2px;display:block;}
+.auth-form input{width:100%;padding:11px 14px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text);font-family:'Outfit',sans-serif;font-size:0.92rem;outline:none;transition:border-color 0.2s;}
 .auth-form input:focus{border-color:var(--aqua);}
 .auth-form input::placeholder{color:var(--muted);}
-.auth-submit{
-  width:100%;padding:12px;border-radius:10px;border:none;cursor:pointer;
-  background:linear-gradient(135deg,var(--aqua),var(--aqua-dark));
-  color:#0A0F1E;font-family:'Outfit',sans-serif;font-weight:700;font-size:0.95rem;
-  margin-top:4px;transition:all 0.2s;
-}
+.auth-submit{width:100%;padding:12px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--aqua),var(--aqua-dark));color:#05080F;font-family:'Outfit',sans-serif;font-weight:800;font-size:0.95rem;margin-top:4px;transition:all 0.2s;}
 .auth-submit:hover{opacity:0.9;transform:translateY(-1px);}
-.auth-divider{text-align:center;font-size:0.78rem;color:var(--muted);margin:4px 0;}
-.auth-success{
-  text-align:center;padding:1.5rem;background:rgba(0,200,83,0.08);
-  border:1px solid rgba(0,200,83,0.2);border-radius:12px;
-  color:#00C853;font-weight:600;font-size:0.95rem;
-  display:none;
-}
-
-/* LOGGED IN NAV */
-.user-chip{
-  display:flex;align-items:center;gap:8px;
-  background:rgba(0,198,212,0.1);border:1px solid rgba(0,198,212,0.2);
-  border-radius:8px;padding:6px 12px;cursor:pointer;transition:all 0.2s;
-}
+.auth-divider{text-align:center;font-size:0.78rem;color:var(--muted);margin:6px 0;}
+.auth-success{text-align:center;padding:1.25rem;border-radius:12px;font-weight:600;font-size:0.88rem;display:none;margin-top:12px;}
+.user-chip{display:flex;align-items:center;gap:8px;background:rgba(0,198,212,0.1);border:1px solid rgba(0,198,212,0.2);border-radius:8px;padding:6px 12px;cursor:pointer;transition:all 0.2s;}
 .user-chip:hover{background:rgba(0,198,212,0.16);}
-.user-avatar{
-  width:26px;height:26px;border-radius:50%;
-  background:linear-gradient(135deg,var(--aqua),var(--aqua-dark));
-  display:flex;align-items:center;justify-content:center;
-  font-size:0.7rem;font-weight:700;color:#0A0F1E;
-}
-.user-name{font-size:0.85rem;font-weight:600;color:var(--aqua);}
+.user-avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--aqua),var(--aqua-dark));display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;color:#05080F;}
+.user-name{font-size:0.85rem;font-weight:700;color:var(--aqua);}
 </style>
 </head>
 <body>
 
+<!-- ANIMATED CANVAS BACKGROUND -->
+<canvas id="bg-canvas"></canvas>
+<div class="grid-lines"></div>
+
 <!-- NAV -->
 <nav>
   <a href="#" class="logo">
-    <img src="logo.png" style="width:52px;height:52px;border-radius:14px;object-fit:cover;outline:2px solid rgba(0,198,212,0.6);outline-offset:2px;" alt="AquaMC Logo"/>
-    <span class="logo-text">AQUA<span>MC</span></span>
+    <img src="logo.png" class="logo-img" alt="AquaMC Logo" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='flex'"/>
+    <div id="logoFallback" class="logo-fallback" style="display:none;">AM</div>
+    <span class="logo-text">Aqua<span>MC</span></span>
   </a>
   <ul>
     <li><a href="#ranks">Ranks</a></li>
@@ -289,19 +198,19 @@ footer p{font-size:0.82rem;color:var(--muted);}
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-badge"><div class="dot"></div> Server On · 1.21.11</div>
+  <div class="hero-badge"><span class="dot"></span> Server Online · 1.21.11</div>
   <h1>AquaMC Store</h1>
-  <p>Unlock exclusive ranks, rare crates, and powerful perks to dominate the server.</p>
+  <p>Unlock legendary ranks, deadly crates & ultimate power on the best Lifesteal server.</p>
   <div class="hero-actions">
     <button class="btn-primary" onclick="document.getElementById('ranks').scrollIntoView({behavior:'smooth'})">Browse Ranks</button>
     <button class="btn-secondary" onclick="document.getElementById('crates').scrollIntoView({behavior:'smooth'})">Open Crates</button>
   </div>
-  <div class="ip-chip" onclick="copyIP()">AQUAMC.ftp.sh:25603 · click to copy</div>
+  <div class="ip-chip" onclick="copyIP()">⚡ play.aquamc.net · click to copy</div>
 </div>
 
 <!-- INFOBAR -->
 <div class="infobar">
-  <div class="infobar-item"><div class="infobar-icon" style="background:#00C853;"></div><strong>Online</strong></div>
+  <div class="infobar-item"><span class="status-dot"></span><strong>Online</strong></div>
   <div class="infobar-item">Players: <strong>128 / 500</strong></div>
   <div class="infobar-item">Version: <strong>1.21.11</strong></div>
   <div class="infobar-item">Mode: <strong>Lifesteal</strong></div>
@@ -312,65 +221,70 @@ footer p{font-size:0.82rem;color:var(--muted);}
 <section id="ranks">
   <div class="section-header">
     <div class="section-label">Ranks</div>
-    <div class="section-title">Choose Your Rank</div>
-    <div class="section-sub">Upgrade your experience with powerful perks and exclusive access.</div>
+    <div class="section-title">Choose Your Power</div>
+    <div class="section-sub">Channel anime legends and dominate the Lifesteal server.</div>
   </div>
   <div class="ranks-grid">
 
-    <div class="rank-card" style="--rank-color:#C0C0C0;">
-      <div class="rank-icon">⚙️</div>
-      <div class="rank-name">Iron</div>
-      <div class="rank-desc">Perfect for new players getting started.</div>
-      <div class="rank-price">$4.99 <span>/ one-time</span></div>
+    <div class="rank-card" style="--rank-color:#ECEFF1;--rank-glow:rgba(236,239,241,0.08);">
+      <span class="rank-emoji">💀</span>
+      <div class="rank-name">Shinigami</div>
+      <div class="rank-desc">Reap souls as the God of Death himself.</div>
+      <div class="rank-price">200৳</div>
+      <div class="rank-price-unit">one-time · BDT</div>
       <ul class="rank-perks">
-        <li>1 Home Location</li><li>Color Chat</li><li>Kit Iron</li><li>[Iron] prefix</li>
+        <li>1 Home Location</li><li>Color Chat</li><li>Kit Shinigami</li><li>[SHINIGAMI] prefix</li>
       </ul>
-      <button class="rank-buy-btn" onclick="openBuy('Iron Rank','$4.99','⚙️')">Buy Now</button>
+      <button class="rank-buy-btn" onclick="openBuy('SHINIGAMI Rank','200৳','💀')">Buy Now</button>
     </div>
 
-    <div class="rank-card" style="--rank-color:#FFD700;">
-      <div class="rank-icon">⭐</div>
-      <div class="rank-name">Gold</div>
-      <div class="rank-desc">Mid-tier perks for active players.</div>
-      <div class="rank-price">$9.99 <span>/ one-time</span></div>
+    <div class="rank-card" style="--rank-color:#00BCD4;--rank-glow:rgba(0,188,212,0.12);">
+      <span class="rank-emoji">👁️</span>
+      <div class="rank-name">Ghoul</div>
+      <div class="rank-desc">Devour your enemies like a full-powered Ghoul.</div>
+      <div class="rank-price">300৳</div>
+      <div class="rank-price-unit">one-time · BDT</div>
       <ul class="rank-perks">
-        <li>3 Home Locations</li><li>Color + Format Chat</li><li>Kit Gold</li><li>[Gold] prefix</li><li>Fly in Spawn</li>
+        <li>3 Home Locations</li><li>Color Chat</li><li>Kit Ghoul</li><li>[GHOUL] prefix</li><li>Speed Boost Perk</li>
       </ul>
-      <button class="rank-buy-btn" onclick="openBuy('Gold Rank','$9.99','⭐')">Buy Now</button>
+      <button class="rank-buy-btn" onclick="openBuy('GHOUL Rank','300৳','👁️')">Buy Now</button>
     </div>
 
-    <div class="rank-card featured" style="--rank-color:#80DEEA;">
-      <div class="rank-badge-pop">Most Popular</div>
-      <div class="rank-icon">💎</div>
-      <div class="rank-name">Diamond</div>
-      <div class="rank-desc">The favorite among dedicated players.</div>
-      <div class="rank-price">$19.99 <span>/ one-time</span></div>
+    <div class="rank-card" style="--rank-color:#FF6F00;--rank-glow:rgba(255,111,0,0.12);">
+      <span class="rank-emoji">⚡</span>
+      <div class="rank-name">Special Grade</div>
+      <div class="rank-desc">Wield Jujutsu power as a Special Grade Sorcerer.</div>
+      <div class="rank-price">400৳</div>
+      <div class="rank-price-unit">one-time · BDT</div>
       <ul class="rank-perks">
-        <li>5 Home Locations</li><li>Full Chat Formatting</li><li>Kit Diamond</li><li>[Diamond] prefix</li><li>Fly in Survival</li><li>1 Free Crate Key/week</li>
+        <li>6 Home Locations</li><li>Full Chat Format</li><li>Kit Special Grade</li><li>[SP.GRADE] prefix</li><li>Fly Access</li><li>Custom Join Message</li>
       </ul>
-      <button class="rank-buy-btn featured-btn" onclick="openBuy('Diamond Rank','$19.99','💎')">Buy Now</button>
+      <button class="rank-buy-btn" onclick="openBuy('SPECIAL GRADE Rank','400৳','⚡')">Buy Now</button>
     </div>
 
-    <div class="rank-card" style="--rank-color:#00C853;">
-      <div class="rank-icon">🌿</div>
-      <div class="rank-name">Emerald</div>
-      <div class="rank-desc">Elite perks for serious competitors.</div>
-      <div class="rank-price">$34.99 <span>/ one-time</span></div>
+    <div class="rank-card" style="--rank-color:#9C27B0;--rank-glow:rgba(156,39,176,0.12);">
+      <span class="rank-emoji">🐉</span>
+      <div class="rank-name">Saiyan</div>
+      <div class="rank-desc">Transform beyond limits like a true Super Saiyan.</div>
+      <div class="rank-price">500৳</div>
+      <div class="rank-price-unit">one-time · BDT</div>
       <ul class="rank-perks">
-        <li>10 Home Locations</li><li>Custom Join Message</li><li>Kit Emerald</li><li>[Emerald] prefix</li><li>All Fly Access</li><li>3 Free Crate Keys/week</li>
+        <li>5 Home Locations</li><li>Color Chat</li><li>Kit Saiyan</li><li>[SAIYAN] prefix</li><li>Fly in Spawn</li>
       </ul>
-      <button class="rank-buy-btn" onclick="openBuy('Emerald Rank','$34.99','🌿')">Buy Now</button>
+      <button class="rank-buy-btn" onclick="openBuy('SAIYAN Rank','500৳','🐉')">Buy Now</button>
     </div>
 
-    <div class="rank-card" style="--rank-color:#CE93D8;">
-      <div class="rank-icon">👑</div>
-      <div class="rank-name">Netherite</div>
-      <div class="rank-desc">Maximum power. Ultimate prestige.</div>
-      <div class="rank-price">$59.99 <span>/ one-time</span></div>
+    <div class="rank-card" style="--rank-color:#E53935;--rank-glow:rgba(229,57,53,0.12);">
+      <div class="rank-badge-pop">TOP RANK</div>
+      <span class="rank-emoji">🔴</span>
+      <div class="rank-name">Akatsuki</div>
+      <div class="rank-desc">Join the most feared organization in the ninja world.</div>
+      <div class="rank-price">600৳</div>
+      <div class="rank-price-unit">one-time · BDT</div>
       <ul class="rank-perks">
-        <li>Unlimited Homes</li><li>Custom Nick + Tag</li><li>Kit Netherite</li><li>[Netherite] prefix</li><li>All Access + Priority Join</li><li>7 Free Crate Keys/week</li><li>Staff Chat Access</li>
+        <li>8 Home Locations</li><li>Format Chat</li><li>Kit Akatsuki</li><li>[AKATSUKI] prefix</li><li>Fly in Survival</li><li>1 Crate Key/week</li>
       </ul>
-      <button class="rank-buy-btn" onclick="openBuy('Netherite Rank','$59.99','👑')">Buy Now</button>
+      <button class="rank-buy-btn featured-btn" onclick="openBuy('AKATSUKI Rank','600৳','🔴')">Buy Now</button>
     </div>
 
   </div>
@@ -380,84 +294,84 @@ footer p{font-size:0.82rem;color:var(--muted);}
 <section id="crates" class="crates-section">
   <div class="section-header">
     <div class="section-label">Crates</div>
-    <div class="section-title">Open a Crate</div>
-    <div class="section-sub">Buy keys and spin for rare rewards, enchanted gear, and exclusive cosmetics.</div>
+    <div class="section-title">Unlock the Crates</div>
+    <div class="section-sub">Spin for rare loot, gear, and exclusive rewards hidden inside each crate.</div>
   </div>
   <div class="crates-grid">
 
-    <div class="crate-card" style="--crate-color:#90CAF9;--crate-bg:rgba(33,150,243,0.06);--crate-glow:rgba(33,150,243,0.2);">
-      <div class="crate-header">
-        <div class="crate-icon-wrap">📦</div>
-        <div class="crate-name">Common Crate</div>
-        <div class="crate-subtitle">Great for beginners</div>
-      </div>
-      <div class="crate-body">
-        <div class="crate-items">
-          <div class="crate-item"><span class="crate-item-name">Iron Sword (Sharpness II)</span><span class="crate-item-chance">40%</span></div>
-          <div class="crate-item"><span class="crate-item-name">64x Cooked Beef</span><span class="crate-item-chance">30%</span></div>
-          <div class="crate-item"><span class="crate-item-name">$500 In-Game Cash</span><span class="crate-item-chance">20%</span></div>
-          <div class="crate-item"><span class="crate-item-name">Gold Rank Upgrade</span><span class="crate-item-chance">10%</span></div>
-        </div>
-        <div class="crate-divider"></div>
-        <div class="crate-key-price"><div class="key-info">1 Key</div><div class="key-price">$1.99</div></div>
-        <button class="crate-buy-btn" onclick="openBuy('Common Crate Key','$1.99','📦')">Buy Keys</button>
-      </div>
-    </div>
-
-    <div class="crate-card" style="--crate-color:#A5D6A7;--crate-bg:rgba(76,175,80,0.06);--crate-glow:rgba(76,175,80,0.2);">
-      <div class="crate-header">
-        <div class="crate-icon-wrap">🗃️</div>
-        <div class="crate-name">Rare Crate</div>
-        <div class="crate-subtitle">Bigger loot, better odds</div>
-      </div>
-      <div class="crate-body">
-        <div class="crate-items">
-          <div class="crate-item"><span class="crate-item-name">Diamond Armor Set</span><span class="crate-item-chance">35%</span></div>
-          <div class="crate-item"><span class="crate-item-name">Enchanted Books (III)</span><span class="crate-item-chance">30%</span></div>
-          <div class="crate-item"><span class="crate-item-name">$2,000 In-Game Cash</span><span class="crate-item-chance">25%</span></div>
-          <div class="crate-item"><span class="crate-item-name">Fly Boost (7 days)</span><span class="crate-item-chance">10%</span></div>
-        </div>
-        <div class="crate-divider"></div>
-        <div class="crate-key-price"><div class="key-info">1 Key</div><div class="key-price">$3.99</div></div>
-        <button class="crate-buy-btn" onclick="openBuy('Rare Crate Key','$3.99','🗃️')">Buy Keys</button>
-      </div>
-    </div>
-
-    <div class="crate-card" style="--crate-color:#FFD54F;--crate-bg:rgba(255,193,7,0.06);--crate-glow:rgba(255,193,7,0.25);">
+    <div class="crate-card" style="--crate-color:#00C6D4;--crate-glow:rgba(0,198,212,0.2);">
       <div class="crate-header">
         <div class="crate-icon-wrap">🏆</div>
-        <div class="crate-name">Legendary Crate</div>
-        <div class="crate-subtitle">Rarest drops on the server</div>
+        <div class="crate-name">Champion</div>
+        <div class="crate-subtitle">Rise above the rest</div>
       </div>
       <div class="crate-body">
         <div class="crate-items">
-          <div class="crate-item"><span class="crate-item-name">Netherite Sword (Sharp V)</span><span class="crate-item-chance">25%</span></div>
-          <div class="crate-item"><span class="crate-item-name">Rank Upgrade (any)</span><span class="crate-item-chance">20%</span></div>
-          <div class="crate-item"><span class="crate-item-name">$10,000 In-Game Cash</span><span class="crate-item-chance">30%</span></div>
-          <div class="crate-item"><span class="crate-item-name">Custom Particle Trail</span><span class="crate-item-chance">25%</span></div>
+          <div class="crate-item"><span class="crate-item-name">Iron Sword (Sharp III)</span><span class="crate-item-chance">35%</span></div>
+          <div class="crate-item"><span class="crate-item-name">64x Golden Apple</span><span class="crate-item-chance">30%</span></div>
+          <div class="crate-item"><span class="crate-item-name">5,000৳ In-Game</span><span class="crate-item-chance">25%</span></div>
+          <div class="crate-item"><span class="crate-item-name">Kit Voucher</span><span class="crate-item-chance">10%</span></div>
         </div>
         <div class="crate-divider"></div>
-        <div class="crate-key-price"><div class="key-info">1 Key</div><div class="key-price">$7.99</div></div>
-        <button class="crate-buy-btn" style="background:#FFD54F;" onclick="openBuy('Legendary Crate Key','$7.99','🏆')">Buy Keys</button>
+        <div class="crate-key-price"><div class="key-info">1 Key</div><div class="key-price">40৳</div></div>
+        <button class="crate-buy-btn" onclick="openBuy('Champion Crate Key','40৳','🏆')">Buy Key</button>
       </div>
     </div>
 
-    <div class="crate-card" style="--crate-color:#00C6D4;--crate-bg:rgba(0,198,212,0.06);--crate-glow:rgba(0,198,212,0.3);">
+    <div class="crate-card" style="--crate-color:#F57F17;--crate-glow:rgba(245,127,23,0.2);">
       <div class="crate-header">
-        <div class="crate-icon-wrap">🌊</div>
-        <div class="crate-name">Aqua Crate</div>
-        <div class="crate-subtitle">Server's exclusive crate</div>
+        <div class="crate-icon-wrap">🏅</div>
+        <div class="crate-name">Elite</div>
+        <div class="crate-subtitle">Top-tier rewards</div>
       </div>
       <div class="crate-body">
         <div class="crate-items">
-          <div class="crate-item"><span class="crate-item-name">Full Netherite Set</span><span class="crate-item-chance">15%</span></div>
-          <div class="crate-item"><span class="crate-item-name">Netherite Rank (30d)</span><span class="crate-item-chance">10%</span></div>
-          <div class="crate-item"><span class="crate-item-name">Exclusive [Aqua] Tag</span><span class="crate-item-chance">5%</span></div>
-          <div class="crate-item"><span class="crate-item-name">$25,000 In-Game Cash</span><span class="crate-item-chance">70%</span></div>
+          <div class="crate-item"><span class="crate-item-name">Diamond Armor (Prot IV)</span><span class="crate-item-chance">25%</span></div>
+          <div class="crate-item"><span class="crate-item-name">Enchanted Books (Max)</span><span class="crate-item-chance">30%</span></div>
+          <div class="crate-item"><span class="crate-item-name">10,000৳ In-Game</span><span class="crate-item-chance">30%</span></div>
+          <div class="crate-item"><span class="crate-item-name">7-Day Fly Boost</span><span class="crate-item-chance">15%</span></div>
         </div>
         <div class="crate-divider"></div>
-        <div class="crate-key-price"><div class="key-info">1 Key</div><div class="key-price">$12.99</div></div>
-        <button class="crate-buy-btn" onclick="openBuy('Aqua Crate Key','$12.99','🌊')">Buy Keys</button>
+        <div class="crate-key-price"><div class="key-info">1 Key</div><div class="key-price">60৳</div></div>
+        <button class="crate-buy-btn" onclick="openBuy('Elite Crate Key','60৳','🏅')">Buy Key</button>
+      </div>
+    </div>
+
+    <div class="crate-card" style="--crate-color:#7B1FA2;--crate-glow:rgba(123,31,162,0.2);">
+      <div class="crate-header">
+        <div class="crate-icon-wrap">♾️</div>
+        <div class="crate-name">Immortal</div>
+        <div class="crate-subtitle">Endless power awaits</div>
+      </div>
+      <div class="crate-body">
+        <div class="crate-items">
+          <div class="crate-item"><span class="crate-item-name">Netherite Sword (Sharp V)</span><span class="crate-item-chance">20%</span></div>
+          <div class="crate-item"><span class="crate-item-name">30-Day Fly Access</span><span class="crate-item-chance">15%</span></div>
+          <div class="crate-item"><span class="crate-item-name">25,000৳ In-Game</span><span class="crate-item-chance">35%</span></div>
+          <div class="crate-item"><span class="crate-item-name">Custom Particle Trail</span><span class="crate-item-chance">30%</span></div>
+        </div>
+        <div class="crate-divider"></div>
+        <div class="crate-key-price"><div class="key-info">1 Key</div><div class="key-price">80৳</div></div>
+        <button class="crate-buy-btn" onclick="openBuy('Immortal Crate Key','80৳','♾️')">Buy Key</button>
+      </div>
+    </div>
+
+    <div class="crate-card" style="--crate-color:#B71C1C;--crate-glow:rgba(183,28,28,0.22);">
+      <div class="crate-header">
+        <div class="crate-icon-wrap">☠️</div>
+        <div class="crate-name">Deadliest</div>
+        <div class="crate-subtitle">Supreme power inside</div>
+      </div>
+      <div class="crate-body">
+        <div class="crate-items">
+          <div class="crate-item"><span class="crate-item-name">Full Netherite Set (God)</span><span class="crate-item-chance">10%</span></div>
+          <div class="crate-item"><span class="crate-item-name">Rank Upgrade (Any)</span><span class="crate-item-chance">15%</span></div>
+          <div class="crate-item"><span class="crate-item-name">50,000৳ In-Game</span><span class="crate-item-chance">30%</span></div>
+          <div class="crate-item"><span class="crate-item-name">Exclusive Death Tag</span><span class="crate-item-chance">45%</span></div>
+        </div>
+        <div class="crate-divider"></div>
+        <div class="crate-key-price"><div class="key-info">1 Key</div><div class="key-price">100৳</div></div>
+        <button class="crate-buy-btn" onclick="openBuy('Deadliest Crate Key','100৳','☠️')">Buy Key</button>
       </div>
     </div>
 
@@ -471,9 +385,9 @@ footer p{font-size:0.82rem;color:var(--muted);}
     <div class="section-title">Server Highlights</div>
   </div>
   <div class="features-grid">
-    <div class="feature-card"><div class="feature-icon">⚡</div><div><div class="feature-title">Instant Delivery</div><div class="feature-desc">Perks applied the moment your payment goes through.</div></div></div>
-    <div class="feature-card"><div class="feature-icon">🔒</div><div><div class="feature-title">Secure Payments</div><div class="feature-desc">PayPal & card payments via trusted gateways.</div></div></div>
-    <div class="feature-card"><div class="feature-icon">🎮</div><div><div class="feature-title">EULA Compliant</div><div class="feature-desc">All purchases follow Minecraft's server EULA.</div></div></div>
+    <div class="feature-card"><div class="feature-icon">⚡</div><div><div class="feature-title">Instant Delivery</div><div class="feature-desc">Perks applied the moment your payment is confirmed.</div></div></div>
+    <div class="feature-card"><div class="feature-icon">🔒</div><div><div class="feature-title">Secure Payments</div><div class="feature-desc">Safe transactions handled via our Discord staff.</div></div></div>
+    <div class="feature-card"><div class="feature-icon">🎮</div><div><div class="feature-title">Lifesteal Mode</div><div class="feature-desc">Steal hearts. Dominate. Survive at all costs.</div></div></div>
     <div class="feature-card"><div class="feature-icon">💬</div><div><div class="feature-title">24/7 Support</div><div class="feature-desc">Open a ticket on Discord — we respond fast.</div></div></div>
   </div>
 </section>
@@ -487,7 +401,7 @@ footer p{font-size:0.82rem;color:var(--muted);}
     <a href="https://discord.gg/yNaWs5ypnh" target="_blank">Discord</a>
     <a href="#">Vote</a>
   </div>
-  <p>© 2026 AquaMC · Not affiliated with Mojang Studios · play.aquamc.net</p>
+  <p>© 2025 AquaMC · Not affiliated with Mojang Studios · play.aquamc.net</p>
 </footer>
 
 <!-- BUY MODAL -->
@@ -496,13 +410,13 @@ footer p{font-size:0.82rem;color:var(--muted);}
     <button class="modal-close" onclick="closeBuy()">✕</button>
     <div class="modal-icon" id="buyIcon">💎</div>
     <div class="modal-title">Purchase Item</div>
-    <div class="modal-sub">To complete your purchase, join our Discord and open a ticket. Our staff will assist you within minutes.</div>
-    <div class="modal-item-name" id="buyItemName">Diamond Rank — $19.99</div>
+    <div class="modal-sub">To complete your purchase, join our Discord and open a ticket. Our staff will help you within minutes!</div>
+    <div class="modal-item-name" id="buyItemName">Item — Price</div>
     <a class="dc-modal-btn" href="https://discord.gg/yNaWs5ypnh" target="_blank">
-      <div class="dc-icon">D</div>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
       Join Discord to Purchase
     </a>
-    <div class="modal-note">After joining, open a ticket in #purchase-support and mention the item above. A staff member will handle your order.</div>
+    <div class="modal-note">After joining, create a ticket in <strong>#purchase-support</strong> and mention the item above.</div>
   </div>
 </div>
 
@@ -515,129 +429,171 @@ footer p{font-size:0.82rem;color:var(--muted);}
       <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Login</button>
       <button class="auth-tab" id="tabRegister" onclick="switchTab('register')">Register</button>
     </div>
-
-    <!-- LOGIN FORM -->
     <div id="loginForm">
       <div class="auth-form">
-        <div>
-          <label>Username or Email</label>
-          <input type="text" placeholder="Enter your username" id="loginUser"/>
-        </div>
-        <div>
-          <label>Password</label>
-          <input type="password" placeholder="Enter your password" id="loginPass"/>
-        </div>
+        <div><label>Username</label><input type="text" placeholder="Your username" id="loginUser"/></div>
+        <div><label>Password</label><input type="password" placeholder="Your password" id="loginPass"/></div>
         <button class="auth-submit" onclick="doLogin()">Login</button>
       </div>
-      <div class="auth-divider" style="margin-top:1rem;">Don't have an account? <span style="color:var(--aqua);cursor:pointer;" onclick="switchTab('register')">Register</span></div>
+      <div class="auth-divider" style="margin-top:1rem;">No account? <span style="color:var(--aqua);cursor:pointer;font-weight:600;" onclick="switchTab('register')">Register here</span></div>
     </div>
-
-    <!-- REGISTER FORM -->
     <div id="registerForm" style="display:none;">
       <div class="auth-form">
-        <div>
-          <label>Minecraft Username</label>
-          <input type="text" placeholder="YourIGN" id="regUser"/>
-        </div>
-        <div>
-          <label>Email Address</label>
-          <input type="email" placeholder="you@email.com" id="regEmail"/>
-        </div>
-        <div>
-          <label>Password</label>
-          <input type="password" placeholder="Create a password" id="regPass"/>
-        </div>
-        <div>
-          <label>Confirm Password</label>
-          <input type="password" placeholder="Repeat your password" id="regPass2"/>
-        </div>
+        <div><label>Minecraft Username</label><input type="text" placeholder="YourIGN" id="regUser"/></div>
+        <div><label>Email Address</label><input type="email" placeholder="you@email.com" id="regEmail"/></div>
+        <div><label>Password</label><input type="password" placeholder="Create a password" id="regPass"/></div>
+        <div><label>Confirm Password</label><input type="password" placeholder="Repeat password" id="regPass2"/></div>
         <button class="auth-submit" onclick="doRegister()">Create Account</button>
       </div>
-      <div class="auth-divider" style="margin-top:1rem;">Already have an account? <span style="color:var(--aqua);cursor:pointer;" onclick="switchTab('login')">Login</span></div>
+      <div class="auth-divider" style="margin-top:1rem;">Have an account? <span style="color:var(--aqua);cursor:pointer;font-weight:600;" onclick="switchTab('login')">Login</span></div>
     </div>
-
     <div class="auth-success" id="authSuccess"></div>
   </div>
 </div>
 
 <script>
-var currentUser = null;
+// ===== ANIMATED CANVAS BACKGROUND =====
+(function(){
+  var canvas = document.getElementById('bg-canvas');
+  var ctx = canvas.getContext('2d');
+  var W, H, particles = [], orbs = [];
 
+  function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Orbs
+  orbs = [
+    {x:0.1, y:0.05, r:300, color:'rgba(0,198,212,', speed:0.0003, phase:0},
+    {x:0.85, y:0.45, r:250, color:'rgba(123,31,162,', speed:0.0004, phase:2},
+    {x:0.4, y:0.85, r:200, color:'rgba(0,151,167,', speed:0.0005, phase:4},
+    {x:0.7, y:0.1,  r:180, color:'rgba(229,57,53,',  speed:0.0003, phase:1},
+  ];
+
+  // Particles
+  for(var i=0;i<60;i++){
+    particles.push({
+      x: Math.random()*1000,
+      y: Math.random()*1000,
+      vy: -(Math.random()*0.4+0.1),
+      vx: (Math.random()-0.5)*0.15,
+      r: Math.random()*1.5+0.3,
+      alpha: Math.random()*0.5+0.1,
+      maxAlpha: Math.random()*0.5+0.1,
+    });
+  }
+
+  var t = 0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+
+    // Draw orbs
+    orbs.forEach(function(o){
+      var ox = W*(o.x + 0.04*Math.sin(t*o.speed*1000 + o.phase));
+      var oy = H*(o.y + 0.03*Math.cos(t*o.speed*800 + o.phase));
+      var grad = ctx.createRadialGradient(ox,oy,0,ox,oy,o.r);
+      grad.addColorStop(0, o.color+'0.13)');
+      grad.addColorStop(1, o.color+'0)');
+      ctx.beginPath();
+      ctx.arc(ox, oy, o.r, 0, Math.PI*2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    });
+
+    // Draw particles
+    particles.forEach(function(p){
+      p.x += p.vx;
+      p.y += p.vy;
+      if(p.y < -10) { p.y = H+10; p.x = Math.random()*W; }
+      if(p.x < 0) p.x = W;
+      if(p.x > W) p.x = 0;
+      ctx.beginPath();
+      ctx.arc(p.x % W, p.y % H, p.r, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(0,198,212,'+p.alpha+')';
+      ctx.fill();
+    });
+
+    // Horizontal scan line
+    var scanY = (t * 40) % H;
+    var scanGrad = ctx.createLinearGradient(0, scanY-2, 0, scanY+2);
+    scanGrad.addColorStop(0,'rgba(0,198,212,0)');
+    scanGrad.addColorStop(0.5,'rgba(0,198,212,0.07)');
+    scanGrad.addColorStop(1,'rgba(0,198,212,0)');
+    ctx.fillStyle = scanGrad;
+    ctx.fillRect(0, scanY-2, W, 4);
+
+    t += 0.016;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ===== SITE FUNCTIONS =====
 function copyIP(){
   try{navigator.clipboard.writeText('play.aquamc.net');}catch(e){}
-  var c = document.querySelector('.ip-chip');
-  var orig = c.textContent;
-  c.textContent = 'Copied!';
-  setTimeout(function(){c.textContent = orig;}, 1500);
+  var c=document.querySelector('.ip-chip');
+  var orig=c.textContent;
+  c.textContent='✅ Copied!';
+  setTimeout(function(){c.textContent=orig;},1500);
 }
-
-function openBuy(name, price, icon){
-  document.getElementById('buyIcon').textContent = icon;
-  document.getElementById('buyItemName').textContent = name + ' — ' + price;
+function openBuy(name,price,icon){
+  document.getElementById('buyIcon').textContent=icon;
+  document.getElementById('buyItemName').textContent=name+' — '+price;
   document.getElementById('buyOverlay').classList.add('active');
 }
 function closeBuy(){document.getElementById('buyOverlay').classList.remove('active');}
-document.getElementById('buyOverlay').addEventListener('click', function(e){if(e.target===this)closeBuy();});
-
+document.getElementById('buyOverlay').addEventListener('click',function(e){if(e.target===this)closeBuy();});
 function openAuth(){document.getElementById('authOverlay').classList.add('active');}
 function closeAuth(){document.getElementById('authOverlay').classList.remove('active');}
-document.getElementById('authOverlay').addEventListener('click', function(e){if(e.target===this)closeAuth();});
-
+document.getElementById('authOverlay').addEventListener('click',function(e){if(e.target===this)closeAuth();});
 function switchTab(tab){
-  document.getElementById('loginForm').style.display = tab==='login'?'block':'none';
-  document.getElementById('registerForm').style.display = tab==='register'?'block':'none';
-  document.getElementById('tabLogin').className = 'auth-tab'+(tab==='login'?' active':'');
-  document.getElementById('tabRegister').className = 'auth-tab'+(tab==='register'?' active':'');
-  document.getElementById('authSuccess').style.display = 'none';
+  document.getElementById('loginForm').style.display=tab==='login'?'block':'none';
+  document.getElementById('registerForm').style.display=tab==='register'?'block':'none';
+  document.getElementById('tabLogin').className='auth-tab'+(tab==='login'?' active':'');
+  document.getElementById('tabRegister').className='auth-tab'+(tab==='register'?' active':'');
+  document.getElementById('authSuccess').style.display='none';
 }
-
-function showSuccess(msg){
-  var s = document.getElementById('authSuccess');
-  s.textContent = msg;
-  s.style.display = 'block';
+function showMsg(msg,ok){
+  var s=document.getElementById('authSuccess');
+  s.textContent=msg;s.style.display='block';
+  s.style.color=ok?'#00C853':'#EF5350';
+  s.style.background=ok?'rgba(0,200,83,0.08)':'rgba(239,83,80,0.08)';
+  s.style.border='1px solid '+(ok?'rgba(0,200,83,0.2)':'rgba(239,83,80,0.2)');
 }
-
+var currentUser=null;
 function doLogin(){
-  var user = document.getElementById('loginUser').value.trim();
-  var pass = document.getElementById('loginPass').value.trim();
-  if(!user||!pass){showSuccess('Please fill in all fields.');return;}
-  var stored = localStorage.getItem('aquamc_user_'+user.toLowerCase());
-  if(!stored){showSuccess('Account not found. Please register first.');return;}
-  var data = JSON.parse(stored);
-  if(data.pass !== pass){showSuccess('Incorrect password.');return;}
-  currentUser = data.username;
-  closeAuth();
-  updateNavUser();
+  var user=document.getElementById('loginUser').value.trim();
+  var pass=document.getElementById('loginPass').value.trim();
+  if(!user||!pass){showMsg('Please fill in all fields.',false);return;}
+  var stored=localStorage.getItem('aquamc_u_'+user.toLowerCase());
+  if(!stored){showMsg('Account not found. Please register.',false);return;}
+  var data=JSON.parse(stored);
+  if(data.pass!==pass){showMsg('Incorrect password.',false);return;}
+  currentUser=data.username;closeAuth();updateNav();
 }
-
 function doRegister(){
-  var user = document.getElementById('regUser').value.trim();
-  var email = document.getElementById('regEmail').value.trim();
-  var pass = document.getElementById('regPass').value.trim();
-  var pass2 = document.getElementById('regPass2').value.trim();
-  if(!user||!email||!pass||!pass2){showSuccess('Please fill in all fields.');return;}
-  if(pass!==pass2){showSuccess('Passwords do not match.');return;}
-  if(pass.length<6){showSuccess('Password must be at least 6 characters.');return;}
-  if(localStorage.getItem('aquamc_user_'+user.toLowerCase())){showSuccess('Username already taken!');return;}
-  localStorage.setItem('aquamc_user_'+user.toLowerCase(), JSON.stringify({username:user, email:email, pass:pass}));
-  currentUser = user;
-  closeAuth();
-  updateNavUser();
+  var user=document.getElementById('regUser').value.trim();
+  var email=document.getElementById('regEmail').value.trim();
+  var pass=document.getElementById('regPass').value.trim();
+  var pass2=document.getElementById('regPass2').value.trim();
+  if(!user||!email||!pass||!pass2){showMsg('Please fill in all fields.',false);return;}
+  if(pass!==pass2){showMsg('Passwords do not match.',false);return;}
+  if(pass.length<6){showMsg('Password must be 6+ characters.',false);return;}
+  if(localStorage.getItem('aquamc_u_'+user.toLowerCase())){showMsg('Username already taken!',false);return;}
+  localStorage.setItem('aquamc_u_'+user.toLowerCase(),JSON.stringify({username:user,email:email,pass:pass}));
+  currentUser=user;closeAuth();updateNav();
 }
-
-function updateNavUser(){
-  if(!currentUser) return;
-  var initials = currentUser.substring(0,2).toUpperCase();
-  var navRight = document.getElementById('navRight');
-  navRight.innerHTML = '<div class="user-chip" onclick="logoutUser()">'
-    + '<div class="user-avatar">'+initials+'</div>'
-    + '<span class="user-name">'+currentUser+'</span>'
-    + '</div>';
+function updateNav(){
+  if(!currentUser)return;
+  var initials=currentUser.substring(0,2).toUpperCase();
+  document.getElementById('navRight').innerHTML='<div class="user-chip" onclick="logoutUser()"><div class="user-avatar">'+initials+'</div><span class="user-name">'+currentUser+'</span></div>';
 }
-
 function logoutUser(){
-  currentUser = null;
-  document.getElementById('navRight').innerHTML = '<button class="nav-btn" onclick="openAuth()">My Account</button>';
+  currentUser=null;
+  document.getElementById('navRight').innerHTML='<button class="nav-btn" onclick="openAuth()">My Account</button>';
 }
 </script>
 </body>
