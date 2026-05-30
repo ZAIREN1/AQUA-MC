@@ -23,12 +23,12 @@ body{
   cursor:none !important;
 }
 
-/* Force cursor:none on all elements */
-*, *::before, *::after, button, a, input {
+/* Force hide default cursor */
+*, *::before, *::after, button, a, input, body, html {
   cursor: none !important;
 }
 
-/* === CUSTOM CURSOR === */
+/* === CUSTOM CURSOR (FIXED FOR ALL AREAS) === */
 .cursor-dot{
   position:fixed;
   width:12px;
@@ -36,7 +36,7 @@ body{
   background:var(--aqua);
   border-radius:50%;
   pointer-events:none;
-  z-index:10002;
+  z-index:99999;
   transform:translate(-50%,-50%);
   transition:width 0.2s,height 0.2s,background 0.2s;
   box-shadow:0 0 20px var(--aqua),0 0 40px var(--aqua);
@@ -49,7 +49,7 @@ body{
   border:2px solid var(--aqua);
   border-radius:50%;
   pointer-events:none;
-  z-index:10001;
+  z-index:99998;
   transform:translate(-50%,-50%);
   transition:width 0.3s,height 0.3s,border-color 0.3s;
   box-shadow:0 0 20px rgba(0,198,212,0.3);
@@ -81,7 +81,7 @@ body{
   background:var(--aqua);
   border-radius:50%;
   pointer-events:none;
-  z-index:10000;
+  z-index:99997;
   opacity:0.6;
   mix-blend-mode:screen;
   box-shadow:0 0 15px var(--aqua);
@@ -94,8 +94,8 @@ body{
   width:60px;
   height:60px;
   pointer-events:none;
-  z-index:9999;
-  transition:transform 0.15s ease-out;
+  z-index:99996;
+  transition:none;
   filter:drop-shadow(0 10px 30px rgba(0,198,212,0.4));
 }
 
@@ -108,12 +108,12 @@ body{
 
 /* === LOADING SCREEN === */
 #loadingScreen{
-  position:fixed;inset:0;z-index:10000;
+  position:fixed;inset:0;z-index:100000;
   background:linear-gradient(135deg,#050d1a 0%,#071020 50%,#040a14 100%);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   transition:opacity 0.8s ease, visibility 0.8s ease;
 }
-#loadingScreen.hidden{opacity:0;visibility:hidden;}
+#loadingScreen.hidden{opacity:0;visibility:hidden;pointer-events:none;}
 .loading-logo{
   font-size:5rem;font-weight:900;
   background:linear-gradient(135deg,#fff 0%,var(--aqua) 50%,#80DEEA 100%);
@@ -543,8 +543,8 @@ footer p{font-size:.82rem;color:var(--muted);}
 <body>
 
 <!-- CUSTOM CURSOR -->
-<div class="cursor-dot" id="cursorDot"></div>
-<div class="cursor-outline" id="cursorOutline"></div>
+<div class="cursor-dot"></div>
+<div class="cursor-outline"></div>
 
 <!-- MINECRAFT CURSOR FOLLOWER -->
 <canvas class="minecraft-cursor-block" id="minecraftCursor" width="120" height="120"></canvas>
@@ -793,70 +793,44 @@ footer p{font-size:.82rem;color:var(--muted);}
 
 <script>
 // ============================================================
-// CUSTOM CURSOR SYSTEM (FIXED & ENHANCED)
+// CUSTOM CURSOR SYSTEM (FULLY FIXED)
 // ============================================================
-const cursorDot = document.getElementById('cursorDot');
-const cursorOutline = document.getElementById('cursorOutline');
-const trails = [];
-const maxTrails = 12;
-
+const cursorDot = document.querySelector('.cursor-dot');
+const cursorOutline = document.querySelector('.cursor-outline');
 let mouseX = window.innerWidth / 2;
 let mouseY = window.innerHeight / 2;
-let cursorDotX = mouseX;
-let cursorDotY = mouseY;
-let cursorOutlineX = mouseX;
-let cursorOutlineY = mouseY;
+let dotX = mouseX;
+let dotY = mouseY;
+let outlineX = mouseX;
+let outlineY = mouseY;
 
+// Track mouse position globally
 document.addEventListener('mousemove', (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-  
-  // Create trail
-  const trail = document.createElement('div');
-  trail.className = 'cursor-trail';
-  trail.style.left = mouseX + 'px';
-  trail.style.top = mouseY + 'px';
-  document.body.appendChild(trail);
-  
-  trails.push(trail);
-  
-  setTimeout(() => {
-    trail.style.opacity = '0';
-    trail.style.transform = 'scale(0)';
-    setTimeout(() => {
-      if(trail.parentNode) trail.remove();
-      trails.shift();
-    }, 300);
-  }, 100);
-  
-  if (trails.length > maxTrails) {
-    const oldTrail = trails.shift();
-    if(oldTrail && oldTrail.parentNode) oldTrail.remove();
-  }
+  mouseX = e.pageX;
+  mouseY = e.pageY;
 });
 
+// Smooth cursor follow
 function updateCursor() {
-  // Smooth follow with easing
-  cursorDotX += (mouseX - cursorDotX) * 0.25;
-  cursorDotY += (mouseY - cursorDotY) * 0.25;
-  cursorOutlineX += (mouseX - cursorOutlineX) * 0.15;
-  cursorOutlineY += (mouseY - cursorOutlineY) * 0.15;
+  dotX += (mouseX - dotX) * 0.25;
+  dotY += (mouseY - dotY) * 0.25;
+  outlineX += (mouseX - outlineX) * 0.15;
+  outlineY += (mouseY - outlineY) * 0.15;
   
-  cursorDot.style.left = cursorDotX + 'px';
-  cursorDot.style.top = cursorDotY + 'px';
-  cursorOutline.style.left = cursorOutlineX + 'px';
-  cursorOutline.style.top = cursorOutlineY + 'px';
+  cursorDot.style.left = dotX + 'px';
+  cursorDot.style.top = dotY + 'px';
+  cursorOutline.style.left = outlineX + 'px';
+  cursorOutline.style.top = outlineY + 'px';
   
   requestAnimationFrame(updateCursor);
 }
 updateCursor();
 
-// Click effect
+// Click animation
 document.addEventListener('mousedown', () => {
   cursorDot.classList.add('clicked');
   cursorOutline.classList.add('clicked');
 });
-
 document.addEventListener('mouseup', () => {
   setTimeout(() => {
     cursorDot.classList.remove('clicked');
@@ -867,29 +841,26 @@ document.addEventListener('mouseup', () => {
 // ============================================================
 // MINECRAFT BLOCK CURSOR FOLLOWER
 // ============================================================
-const minecraftCanvas = document.getElementById('minecraftCursor');
-const mcCtx = minecraftCanvas.getContext('2d');
+const mcCanvas = document.getElementById('minecraftCursor');
+const mcCtx = mcCanvas.getContext('2d');
 let mcBlockX = window.innerWidth / 2;
 let mcBlockY = window.innerHeight / 2;
-let mcBlockRotation = 0;
+let mcRotation = 0;
 
-// Draw isometric Minecraft block
 function drawMinecraftBlock() {
   mcCtx.clearRect(0, 0, 120, 120);
-  
   mcCtx.save();
   mcCtx.translate(60, 60);
-  mcCtx.rotate(mcBlockRotation);
+  mcCtx.rotate(mcRotation);
   
-  const size = 30;
-  const depth = 10;
+  const s = 30, d = 10;
   
-  // Top face (grass green)
+  // Top (grass)
   mcCtx.beginPath();
-  mcCtx.moveTo(0, -depth);
-  mcCtx.lineTo(size/2, -depth + size*0.3);
-  mcCtx.lineTo(0, -depth + size*0.6);
-  mcCtx.lineTo(-size/2, -depth + size*0.3);
+  mcCtx.moveTo(0, -d);
+  mcCtx.lineTo(s/2, -d + s*0.3);
+  mcCtx.lineTo(0, -d + s*0.6);
+  mcCtx.lineTo(-s/2, -d + s*0.3);
   mcCtx.closePath();
   mcCtx.fillStyle = '#5D9E3F';
   mcCtx.fill();
@@ -897,64 +868,52 @@ function drawMinecraftBlock() {
   mcCtx.lineWidth = 1;
   mcCtx.stroke();
   
-  // Right face (dirt brown)
+  // Right (dirt)
   mcCtx.beginPath();
-  mcCtx.moveTo(size/2, -depth + size*0.3);
-  mcCtx.lineTo(size/2, size*0.3);
-  mcCtx.lineTo(0, size*0.6);
-  mcCtx.lineTo(0, -depth + size*0.6);
+  mcCtx.moveTo(s/2, -d + s*0.3);
+  mcCtx.lineTo(s/2, s*0.3);
+  mcCtx.lineTo(0, s*0.6);
+  mcCtx.lineTo(0, -d + s*0.6);
   mcCtx.closePath();
   mcCtx.fillStyle = '#8B6340';
   mcCtx.fill();
-  mcCtx.strokeStyle = 'rgba(0,0,0,0.3)';
   mcCtx.stroke();
   
-  // Left face (darker dirt)
+  // Left (darker)
   mcCtx.beginPath();
-  mcCtx.moveTo(-size/2, -depth + size*0.3);
-  mcCtx.lineTo(0, -depth + size*0.6);
-  mcCtx.lineTo(0, size*0.6);
-  mcCtx.lineTo(-size/2, size*0.3);
+  mcCtx.moveTo(-s/2, -d + s*0.3);
+  mcCtx.lineTo(0, -d + s*0.6);
+  mcCtx.lineTo(0, s*0.6);
+  mcCtx.lineTo(-s/2, s*0.3);
   mcCtx.closePath();
   mcCtx.fillStyle = '#6B4C2D';
   mcCtx.fill();
-  mcCtx.strokeStyle = 'rgba(0,0,0,0.3)';
-  mcCtx.stroke();
-  
-  // Pixel details on grass
-  mcCtx.beginPath();
-  mcCtx.moveTo(-5, -depth + size*0.25);
-  mcCtx.lineTo(5, -depth + size*0.15);
-  mcCtx.strokeStyle = 'rgba(255,255,255,0.2)';
-  mcCtx.lineWidth = 1.5;
   mcCtx.stroke();
   
   mcCtx.restore();
 }
 
-function updateMinecraftBlock() {
-  // Smooth follow
+function updateMCBlock() {
   mcBlockX += (mouseX - mcBlockX) * 0.12;
   mcBlockY += (mouseY - mcBlockY) * 0.12;
   
-  minecraftCanvas.style.left = (mcBlockX - 60) + 'px';
-  minecraftCanvas.style.top = (mcBlockY - 60) + 'px';
+  mcCanvas.style.left = (mcBlockX - 30) + 'px';
+  mcCanvas.style.top = (mcBlockY - 30) + 'px';
   
-  // Rotate block based on movement
   const dx = mouseX - mcBlockX;
   const dy = mouseY - mcBlockY;
-  const targetRotation = Math.atan2(dy, dx);
-  mcBlockRotation += (targetRotation - mcBlockRotation) * 0.1;
+  mcRotation += (Math.atan2(dy, dx) - mcRotation) * 0.1;
   
   drawMinecraftBlock();
-  requestAnimationFrame(updateMinecraftBlock);
+  requestAnimationFrame(updateMCBlock);
 }
-updateMinecraftBlock();
+updateMCBlock();
 
 // ============================================================
-// RIPPLE EFFECT ON BUTTONS
+// RIPPLE EFFECT
 // ============================================================
 function createRipple(e) {
+  if(!e.currentTarget) return;
   const button = e.currentTarget;
   const ripple = document.createElement('span');
   ripple.className = 'ripple';
@@ -969,6 +928,7 @@ function createRipple(e) {
   ripple.style.top = y + 'px';
   
   button.style.position = 'relative';
+  button.style.overflow = 'hidden';
   button.appendChild(ripple);
   
   setTimeout(() => ripple.remove(), 600);
@@ -981,39 +941,57 @@ document.addEventListener('click', (e) => {
 });
 
 // ============================================================
-// SEQUENTIAL 3D BUILD ANIMATION
+// CINEMATIC AUTO-SCROLL INTRO + BUILD SEQUENCE
 // ============================================================
 const buildSequence = [
-  { delay: 1500, action: () => document.getElementById('loadingScreen').classList.add('hidden') },
-  { delay: 1700, id: 'nav', animation: 'buildSlideRotate', duration: 900 },
-  { delay: 2200, id: 'badge', animation: 'buildPopIn', duration: 700 },
-  { delay: 2500, id: 'title', animation: 'buildFromSpace', duration: 1000 },
-  { delay: 3000, id: 'subtitle', animation: 'buildFadeUp', duration: 800 },
-  { delay: 3400, id: 'heroButtons', animation: 'buildPopIn', duration: 800 },
-  { delay: 3800, id: 'ipChip', animation: 'buildFadeUp', duration: 700 },
-  { delay: 4200, id: 'infobar', animation: 'buildSlideRotate', duration: 800 },
-  { delay: 4700, id: 'ranksLabel', animation: 'buildPopIn', duration: 600 },
-  { delay: 4900, id: 'ranksTitle', animation: 'buildFromSpace', duration: 900 },
-  { delay: 5300, id: 'ranksSub', animation: 'buildFadeUp', duration: 700 },
-  { delay: 5700, id: 'rank1', animation: 'buildFlipIn', duration: 900 },
-  { delay: 6000, id: 'rank2', animation: 'buildFlipIn', duration: 900 },
-  { delay: 6300, id: 'rank3', animation: 'buildFlipIn', duration: 900 },
-  { delay: 6600, id: 'rank4', animation: 'buildFlipIn', duration: 900 },
-  { delay: 6900, id: 'rank5', animation: 'buildFlipIn', duration: 900 },
-  { delay: 7500, id: 'cratesLabel', animation: 'buildPopIn', duration: 600 },
-  { delay: 7700, id: 'cratesTitle', animation: 'buildFromSpace', duration: 900 },
-  { delay: 8100, id: 'cratesSub', animation: 'buildFadeUp', duration: 700 },
-  { delay: 8500, id: 'crate1', animation: 'buildFlipIn', duration: 900 },
-  { delay: 8800, id: 'crate2', animation: 'buildFlipIn', duration: 900 },
-  { delay: 9100, id: 'crate3', animation: 'buildFlipIn', duration: 900 },
-  { delay: 9400, id: 'crate4', animation: 'buildFlipIn', duration: 900 },
-  { delay: 9900, id: 'featuresLabel', animation: 'buildPopIn', duration: 600 },
-  { delay: 10100, id: 'featuresTitle', animation: 'buildFromSpace', duration: 900 },
-  { delay: 10500, id: 'feature1', animation: 'buildSlideRotate', duration: 700 },
-  { delay: 10700, id: 'feature2', animation: 'buildSlideRotate', duration: 700 },
-  { delay: 10900, id: 'feature3', animation: 'buildSlideRotate', duration: 700 },
-  { delay: 11100, id: 'feature4', animation: 'buildSlideRotate', duration: 700 },
-  { delay: 11600, id: 'footer', animation: 'buildFadeUp', duration: 900 }
+  { delay: 1500, action: () => {
+    document.getElementById('loadingScreen').classList.add('hidden');
+    // Auto-scroll to bottom for cinematic intro
+    window.scrollTo({top: document.body.scrollHeight, behavior: 'instant'});
+  }},
+  
+  // Start building from bottom up
+  { delay: 1700, action: () => {
+    window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+  }},
+  
+  { delay: 1900, id: 'footer', animation: 'buildFadeUp', duration: 900 },
+  { delay: 2300, id: 'feature4', animation: 'buildSlideRotate', duration: 700 },
+  { delay: 2500, id: 'feature3', animation: 'buildSlideRotate', duration: 700 },
+  { delay: 2700, id: 'feature2', animation: 'buildSlideRotate', duration: 700 },
+  { delay: 2900, id: 'feature1', animation: 'buildSlideRotate', duration: 700 },
+  { delay: 3200, id: 'featuresTitle', animation: 'buildFromSpace', duration: 900 },
+  { delay: 3400, id: 'featuresLabel', animation: 'buildPopIn', duration: 600 },
+  
+  { delay: 3800, id: 'crate4', animation: 'buildFlipIn', duration: 900 },
+  { delay: 4100, id: 'crate3', animation: 'buildFlipIn', duration: 900 },
+  { delay: 4400, id: 'crate2', animation: 'buildFlipIn', duration: 900 },
+  { delay: 4700, id: 'crate1', animation: 'buildFlipIn', duration: 900 },
+  { delay: 5200, id: 'cratesSub', animation: 'buildFadeUp', duration: 700 },
+  { delay: 5400, id: 'cratesTitle', animation: 'buildFromSpace', duration: 900 },
+  { delay: 5700, id: 'cratesLabel', animation: 'buildPopIn', duration: 600 },
+  
+  { delay: 6100, id: 'rank5', animation: 'buildFlipIn', duration: 900 },
+  { delay: 6400, id: 'rank4', animation: 'buildFlipIn', duration: 900 },
+  { delay: 6700, id: 'rank3', animation: 'buildFlipIn', duration: 900 },
+  { delay: 7000, id: 'rank2', animation: 'buildFlipIn', duration: 900 },
+  { delay: 7300, id: 'rank1', animation: 'buildFlipIn', duration: 900 },
+  { delay: 7800, id: 'ranksSub', animation: 'buildFadeUp', duration: 700 },
+  { delay: 8000, id: 'ranksTitle', animation: 'buildFromSpace', duration: 900 },
+  { delay: 8300, id: 'ranksLabel', animation: 'buildPopIn', duration: 600 },
+  
+  { delay: 8700, id: 'infobar', animation: 'buildSlideRotate', duration: 800 },
+  { delay: 9200, id: 'ipChip', animation: 'buildFadeUp', duration: 700 },
+  { delay: 9600, id: 'heroButtons', animation: 'buildPopIn', duration: 800 },
+  { delay: 10000, id: 'subtitle', animation: 'buildFadeUp', duration: 800 },
+  { delay: 10400, id: 'title', animation: 'buildFromSpace', duration: 1000 },
+  { delay: 10900, id: 'badge', animation: 'buildPopIn', duration: 700 },
+  { delay: 11300, id: 'nav', animation: 'buildSlideRotate', duration: 900 },
+  
+  // Scroll to top after build complete
+  { delay: 12200, action: () => {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }}
 ];
 
 function buildWebsite() {
@@ -1035,7 +1013,7 @@ function buildWebsite() {
 window.addEventListener('load', buildWebsite);
 
 // ============================================================
-// THREE.JS 3D BACKGROUND (OPTIMIZED)
+// THREE.JS BACKGROUND
 // ============================================================
 (function(){
   const canvas = document.getElementById('three-canvas');
@@ -1044,7 +1022,6 @@ window.addEventListener('load', buildWebsite);
   const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
   camera.position.z = 18;
 
   const ambientLight = new THREE.AmbientLight(0x404040, 1.8);
@@ -1058,51 +1035,36 @@ window.addEventListener('load', buildWebsite);
   pointLight2.position.set(-12, -12, 8);
   scene.add(pointLight2);
 
-  const pointLight3 = new THREE.PointLight(0xFF6F00, 1.5, 40);
-  pointLight3.position.set(0, 0, -10);
-  scene.add(pointLight3);
-
   const blockGeometry = new THREE.BoxGeometry(1, 1, 1);
   const blockMaterials = [
     new THREE.MeshStandardMaterial({color: 0x5D9E3F, metalness: 0.3, roughness: 0.7}),
-    new THREE.MeshStandardMaterial({color: 0x7A7A7A, metalness: 0.2, roughness: 0.8}),
-    new THREE.MeshStandardMaterial({color: 0x2E86AB, metalness: 0.6, roughness: 0.4, emissive: 0x1A6A8A, emissiveIntensity: 0.3}),
     new THREE.MeshStandardMaterial({color: 0x4FBDBA, metalness: 0.8, roughness: 0.2, emissive: 0x3A9A97, emissiveIntensity: 0.4}),
     new THREE.MeshStandardMaterial({color: 0xE8B84B, metalness: 0.4, roughness: 0.5, emissive: 0xC89A2E, emissiveIntensity: 0.6}),
-    new THREE.MeshStandardMaterial({color: 0x6B5B6E, metalness: 0.9, roughness: 0.3}),
-    new THREE.MeshStandardMaterial({color: 0x1A0D2E, metalness: 0.7, roughness: 0.4}),
   ];
 
   const blocks = [];
-  for(let i = 0; i < 30; i++){
-    const material = blockMaterials[Math.floor(Math.random() * blockMaterials.length)];
-    const block = new THREE.Mesh(blockGeometry, material);
+  for(let i = 0; i < 25; i++){
+    const mat = blockMaterials[Math.floor(Math.random() * blockMaterials.length)];
+    const block = new THREE.Mesh(blockGeometry, mat);
     block.position.set(
       (Math.random() - 0.5) * 50,
       (Math.random() - 0.5) * 50,
       (Math.random() - 0.5) * 40
     );
-    block.rotation.set(
-      Math.random() * Math.PI,
-      Math.random() * Math.PI,
-      Math.random() * Math.PI
-    );
-    const scale = Math.random() * 1.8 + 0.6;
-    block.scale.setScalar(scale);
+    block.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+    block.scale.setScalar(Math.random() * 1.5 + 0.7);
     block.userData = {
       speedY: Math.random() * 0.01 + 0.003,
       speedX: (Math.random() - 0.5) * 0.006,
-      speedZ: (Math.random() - 0.5) * 0.004,
       rotSpeedX: (Math.random() - 0.5) * 0.012,
       rotSpeedY: (Math.random() - 0.5) * 0.015,
-      rotSpeedZ: (Math.random() - 0.5) * 0.01
     };
     blocks.push(block);
     scene.add(block);
   }
 
   const particleGeometry = new THREE.BufferGeometry();
-  const particleCount = 600;
+  const particleCount = 500;
   const positions = new Float32Array(particleCount * 3);
   const colors = new Float32Array(particleCount * 3);
 
@@ -1112,12 +1074,7 @@ window.addEventListener('load', buildWebsite);
     positions[i + 2] = (Math.random() - 0.5) * 80;
 
     const color = new THREE.Color();
-    const rand = Math.random();
-    if(rand > 0.7) color.setHex(0x00C6D4);
-    else if(rand > 0.5) color.setHex(0xFFFFFF);
-    else if(rand > 0.3) color.setHex(0x80DEEA);
-    else color.setHex(0xFF6F00);
-    
+    color.setHex(Math.random() > 0.5 ? 0x00C6D4 : 0xFFFFFF);
     colors[i] = color.r;
     colors[i + 1] = color.g;
     colors[i + 2] = color.b;
@@ -1127,7 +1084,7 @@ window.addEventListener('load', buildWebsite);
   particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
   const particleMaterial = new THREE.PointsMaterial({
-    size: 0.18,
+    size: 0.15,
     vertexColors: true,
     transparent: true,
     opacity: 0.9,
@@ -1156,46 +1113,27 @@ window.addEventListener('load', buildWebsite);
     blocks.forEach(block => {
       block.position.y += block.userData.speedY;
       block.position.x += block.userData.speedX;
-      block.position.z += block.userData.speedZ;
-      
       block.rotation.x += block.userData.rotSpeedX;
       block.rotation.y += block.userData.rotSpeedY;
-      block.rotation.z += block.userData.rotSpeedZ;
 
       if(block.position.y > 30) block.position.y = -30;
       if(block.position.x > 30) block.position.x = -30;
       if(block.position.x < -30) block.position.x = 30;
-      if(block.position.z > 25) block.position.z = -25;
-      if(block.position.z < -25) block.position.z = 25;
     });
 
-    const positions = particles.geometry.attributes.position.array;
-    const time = Date.now() * 0.0001;
-    
-    for(let i = 0; i < positions.length; i += 3){
-      positions[i + 1] += 0.015;
-      positions[i] += Math.sin(time + i) * 0.01;
-      
-      if(positions[i + 1] > 50) positions[i + 1] = -50;
-      if(positions[i] > 50) positions[i] = -50;
-      if(positions[i] < -50) positions[i] = 50;
+    const pos = particles.geometry.attributes.position.array;
+    for(let i = 0; i < pos.length; i += 3){
+      pos[i + 1] += 0.015;
+      if(pos[i + 1] > 50) pos[i + 1] = -50;
     }
     particles.geometry.attributes.position.needsUpdate = true;
-
     particles.rotation.y += 0.0003;
-    particles.rotation.x += 0.0001;
 
-    const time2 = Date.now() * 0.0008;
-    pointLight1.position.x = Math.sin(time2) * 18;
-    pointLight1.position.z = Math.cos(time2) * 18;
-    pointLight1.position.y = Math.sin(time2 * 0.5) * 10;
-    
-    pointLight2.position.x = Math.sin(time2 + Math.PI) * 15;
-    pointLight2.position.z = Math.cos(time2 + Math.PI) * 15;
-    pointLight2.position.y = Math.cos(time2 * 0.7) * 8;
-
-    pointLight3.position.x = Math.cos(time2 * 1.5) * 10;
-    pointLight3.position.y = Math.sin(time2 * 1.3) * 12;
+    const time = Date.now() * 0.0008;
+    pointLight1.position.x = Math.sin(time) * 18;
+    pointLight1.position.z = Math.cos(time) * 18;
+    pointLight2.position.x = Math.sin(time + Math.PI) * 15;
+    pointLight2.position.z = Math.cos(time + Math.PI) * 15;
 
     renderer.render(scene, camera);
   }
@@ -1216,7 +1154,7 @@ function copyIP(){
   try{navigator.clipboard.writeText('aquamc.hidenplay.net');}catch(e){}
   const c = document.querySelector('.ip-chip');
   const orig = c.textContent;
-  c.textContent = '✅ Copied to Clipboard!';
+  c.textContent = '✅ Copied!';
   setTimeout(() => c.textContent = orig, 2000);
 }
 function openBuy(name,price,icon){
@@ -1225,10 +1163,10 @@ function openBuy(name,price,icon){
   document.getElementById('buyOverlay').classList.add('active');
 }
 function closeBuy(){document.getElementById('buyOverlay').classList.remove('active');}
-document.getElementById('buyOverlay').addEventListener('click', function(e){if(e.target === this)closeBuy();});
+document.getElementById('buyOverlay').addEventListener('click', (e) => {if(e.target === e.currentTarget)closeBuy();});
 function openAuth(){document.getElementById('authOverlay').classList.add('active');}
 function closeAuth(){document.getElementById('authOverlay').classList.remove('active');}
-document.getElementById('authOverlay').addEventListener('click', function(e){if(e.target === this)closeAuth();});
+document.getElementById('authOverlay').addEventListener('click', (e) => {if(e.target === e.currentTarget)closeAuth();});
 function switchTab(tab){
   document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
   document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
@@ -1250,7 +1188,7 @@ function doLogin(){
   const pass = document.getElementById('loginPass').value.trim();
   if(!user || !pass){showMsg('Please fill in all fields.', false); return;}
   const stored = localStorage.getItem('aquamc_u_' + user.toLowerCase());
-  if(!stored){showMsg('Account not found. Please register.', false); return;}
+  if(!stored){showMsg('Account not found.', false); return;}
   const data = JSON.parse(stored);
   if(data.pass !== pass){showMsg('Incorrect password.', false); return;}
   currentUser = data.username;
@@ -1262,10 +1200,10 @@ function doRegister(){
   const email = document.getElementById('regEmail').value.trim();
   const pass = document.getElementById('regPass').value.trim();
   const pass2 = document.getElementById('regPass2').value.trim();
-  if(!user || !email || !pass || !pass2){showMsg('Please fill in all fields.', false); return;}
+  if(!user || !email || !pass || !pass2){showMsg('Fill all fields.', false); return;}
   if(pass !== pass2){showMsg('Passwords do not match.', false); return;}
-  if(pass.length < 6){showMsg('Password must be 6+ characters.', false); return;}
-  if(localStorage.getItem('aquamc_u_' + user.toLowerCase())){showMsg('Username already taken!', false); return;}
+  if(pass.length < 6){showMsg('Password must be 6+ chars.', false); return;}
+  if(localStorage.getItem('aquamc_u_' + user.toLowerCase())){showMsg('Username taken!', false); return;}
   localStorage.setItem('aquamc_u_' + user.toLowerCase(), JSON.stringify({username: user, email: email, pass: pass}));
   currentUser = user;
   closeAuth();
